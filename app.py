@@ -41,6 +41,19 @@ tools_by_name = {tool.name: tool for tool in tools}
 
 
 def tool_node(state: AgentState):
+    """
+    Processes tool calls from the latest message in the agent state and returns
+    the results as ToolMessages.
+
+    Args:
+        state (AgentState): The current state containing a sequence of messages,
+            where each message may include tool calls.
+
+    Returns:
+        dict: A dictionary with a list of ToolMessages containing the results
+        of invoked tools.
+    """
+
     outputs = []
     for tool_call in state["messages"][-1].tool_calls:
         tool_result = tools_by_name[tool_call["name"]].invoke(tool_call["args"])
@@ -58,6 +71,18 @@ def call_model(
     config: RunnableConfig,
 ):
 
+    """
+    Calls the chat model with the current state and the given configuration.
+
+    Args:
+        state (AgentState): The current state containing a sequence of messages,
+            where each message may include tool calls.
+        config (RunnableConfig): The configuration for the model run.
+
+    Returns:
+        dict: A dictionary with a list of messages containing the response
+        from the chat model.
+    """
     system_prompt = SystemMessage(
         "You are a helpful AI assistant, please respond to the users query to the best of your ability!"
     )
@@ -65,6 +90,17 @@ def call_model(
     return {"messages": [response]}
 
 def should_continue(state: AgentState):
+
+    """
+    Determines whether the workflow should continue or end based on the presence
+    of tool calls in the last message.
+
+    Args:
+        state (AgentState): The current agent state containing a sequence of messages.
+
+    Returns:
+        str: "continue" if the last message contains tool calls, otherwise "end".
+    """
 
     messages = state["messages"]
     last_message = messages[-1]
