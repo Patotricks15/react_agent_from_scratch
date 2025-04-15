@@ -123,6 +123,10 @@ workflow.add_edge("tools", "agent")
 
 graph = workflow.compile()
 
+# Save graph png
+ascii_graph = graph.get_graph(xray=1).draw_ascii()
 
-inputs = {"messages": [("user", "what is the weather in Inhoaíba RJ?")]}
+print(ascii_graph)
+
+inputs = {"messages": [("user", "what is the weather in Rio de Janeiro RJ?")]}
 print(graph.invoke(inputs)['messages'][-1].content)
